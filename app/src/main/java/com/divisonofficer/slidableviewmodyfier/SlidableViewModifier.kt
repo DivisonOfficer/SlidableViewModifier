@@ -35,24 +35,43 @@ class SlidableViewModifier {
         return this
     }
 
+    /**
+     * 뷰의 최대 높이
+     */
     fun setMaxHeight(height : Int) : SlidableViewModifier
     {
         maxHeight = height
         return this
     }
+
+    /**
+     * 뷰의 최소 높이
+     */
     fun setMinHeight(height : Int) : SlidableViewModifier{
         minHeight = height
         return this
     }
+
+    /**
+     * 슬라이드 제스쳐를 인식할 최상단 뷰의 범위
+     */
     fun setHeadRatio(ratio: Double) : SlidableViewModifier{
         topTouchableRatio = ratio.toFloat()
         return this
     }
+
+    /**
+     * 슬라이드가 변할때 비율을 받아오는 콜백 함수
+     */
     fun setOnSlideRatioChangeListener(listener : (Float) -> Unit) : SlidableViewModifier
     {
         onSlideChangeListener = listener
         return this
     }
+
+    /**
+     * 활성화
+     */
     fun activate() : SlidableViewModifier
     {
 
@@ -64,9 +83,7 @@ class SlidableViewModifier {
         return this
 
     }
-    private fun Int.cy() : Int{
-        return this - view.y.toInt()
-    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setThouchListener(){
         Log.d(TAG,"Attach Listener")
@@ -106,7 +123,7 @@ class SlidableViewModifier {
                 }
                 MotionEvent.ACTION_UP->{
                     onMoving = false
-                    animateHeight(this.view.height)
+                    animateHeight()
                     return@setOnTouchListener false
                 }
 
@@ -126,12 +143,19 @@ class SlidableViewModifier {
     }
     var onSlideChangeListener : (Float)->Unit = {_ ->}
 
+    /**
+     * 자동으로 열기
+     */
     fun openView()
     {
         animatePreHeight = view.height.toFloat()
         openAnimator.start()
         isOpened = true
     }
+
+    /**
+     * 자동으로 닫기
+     */
     fun closeView()
     {
         animatePreHeight = view.height.toFloat()
@@ -139,7 +163,10 @@ class SlidableViewModifier {
         isOpened = false
     }
 
-    private fun animateHeight(currentHeight: Int)
+    /**
+     * 터치 제스처 손을 땔 경우, 뷰를 어느 한 방향으로 이동시킵니다.
+     */
+    private fun animateHeight()
     {
         val ratio = slideRatio
 
