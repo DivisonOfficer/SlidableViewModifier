@@ -1,7 +1,8 @@
 # SlidableViewModifier
 Animate ViewContainer with Slide Gesture. It can be with a modifier class
 
-![image](https://user-images.githubusercontent.com/41609506/153758679-fbc16469-00c5-4e02-9c6d-360748b5f2b3.png)
+![20220213_234855](https://user-images.githubusercontent.com/41609506/153758739-d5c7893a-78a9-42df-bad9-71b6c7de0475.gif)
+
 
 
 Hwo to use?
