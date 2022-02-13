@@ -9,8 +9,7 @@ Hwo to use?
 """
 
 
-modifier = SlidableViewModifier().setView(myItem).setMaxHeight(1800).setMinHeight(1000).setHeadRatio(0.35).setOnSlideRatioChangeListener {
-               
+  modifier = SlidableViewModifier().setView(myItem).setMaxHeight(1800).setMinHeight(1000).setHeadRatio(0.35).setOnSlideRatioChangeListener {       
                imageView.alpha = (1-it)
                
             }.activate()
