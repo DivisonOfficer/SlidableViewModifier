@@ -8,7 +8,7 @@ import com.divisonofficer.slidableviewmodyfier.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var bind : ActivityMainBinding
-
+    lateinit var modifier: SlidableViewModifier
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -18,10 +18,15 @@ class MainActivity : AppCompatActivity() {
 
         bind.apply{
 
-            SlidableViewModifier().setView(myItem).setMaxHeight(1800).setMinHeight(1000).setHeadRatio(0.35).setOnSlideRatioChangeListener {
+            modifier = SlidableViewModifier().setView(myItem).setMaxHeight(1800).setMinHeight(1000).setHeadRatio(0.35).setOnSlideRatioChangeListener {
                 imageView.alpha = (1-it)
                 Log.d("MainActivity","${it} is alpha")
             }.activate()
+
+            buttonbutton.setOnClickListener {
+                if(modifier.isOpened) modifier.closeView()
+                else modifier.openView()
+            }
         }
     }
 }

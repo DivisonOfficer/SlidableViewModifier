@@ -1,5 +1,7 @@
 package com.divisonofficer.slidableviewmodyfier
 
+import android.animation.ObjectAnimator
+import android.animation.TimeAnimator
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.MotionEvent
@@ -9,6 +11,9 @@ class SlidableViewModifier {
     val TAG = "Modifier"
     private var onMoving = false
 
+
+
+
     private var minHeight = 0
     private var maxHeight = 1000
 
@@ -17,6 +22,11 @@ class SlidableViewModifier {
     private lateinit var view : View
 
     private var topTouchableRatio = 0.2f
+
+    /**
+     * 얼마만큼 열면 완전히 열리는지
+     */
+    private var gestureOpenHeightRatio = 0.25f
 
     fun setView(view : View) : SlidableViewModifier
     {
@@ -43,13 +53,15 @@ class SlidableViewModifier {
         onSlideChangeListener = listener
         return this
     }
-    fun activate()
+    fun activate() : SlidableViewModifier
     {
 
         val param = view.layoutParams
         param.height = minHeight
         view.layoutParams = param
         setThouchListener()
+
+        return this
 
     }
     private fun Int.cy() : Int{
@@ -87,13 +99,14 @@ class SlidableViewModifier {
                         )
                         val param = this.view.layoutParams
                         param.height = toHeight
-                        setRatio(toHeight)
+                        setRatio(toHeight.toFloat())
                         this.view.layoutParams = param
                         return@setOnTouchListener false
                     }
                 }
                 MotionEvent.ACTION_UP->{
                     onMoving = false
+                    animateHeight(this.view.height)
                     return@setOnTouchListener false
                 }
 
@@ -106,10 +119,77 @@ class SlidableViewModifier {
 
     }
     var slideRatio = 0f
-    private fun setRatio(currentHeight : Int)
+    private fun setRatio(currentHeight: Float)
     {
         slideRatio = ((currentHeight.toFloat() - minHeight) / (maxHeight - minHeight))
         onSlideChangeListener(slideRatio)
     }
     var onSlideChangeListener : (Float)->Unit = {_ ->}
+
+    fun openView()
+    {
+        animatePreHeight = view.height.toFloat()
+        openAnimator.start()
+        isOpened = true
+    }
+    fun closeView()
+    {
+        animatePreHeight = view.height.toFloat()
+        closeAnimator.start()
+        isOpened = false
+    }
+
+    private fun animateHeight(currentHeight: Int)
+    {
+        val ratio = slideRatio
+
+
+        if (isOpened)
+        {
+            if(ratio < 1f-gestureOpenHeightRatio)
+            {
+                closeView()
+            }
+            else{
+                openView()
+            }
+        }
+        else{
+            if( ratio > gestureOpenHeightRatio)
+            {
+                openView()
+            }
+            else
+            {
+                closeView()
+            }
+
+        }
+
+    }
+    var isOpened = false
+
+    var animatePreHeight = 0f
+    private val openAnimator = TimeAnimator.ofFloat(0f,1f).apply{
+        addUpdateListener {
+            val newHeight =
+               animatePreHeight + (maxHeight - animatePreHeight) * it.animatedFraction
+            val param = view.layoutParams
+            param.height = newHeight.toInt()
+            view.layoutParams = param
+            setRatio(newHeight)
+        }
+        duration = 300
+    }
+    private val closeAnimator = TimeAnimator.ofFloat(0f,1f).apply{
+        addUpdateListener {
+            val newHeight =
+            animatePreHeight + (minHeight - animatePreHeight) * it.animatedFraction
+            val param = view.layoutParams
+            param.height = newHeight.toInt()
+            view.layoutParams = param
+            setRatio(newHeight)
+        }
+        duration = 300
+    }
 }
