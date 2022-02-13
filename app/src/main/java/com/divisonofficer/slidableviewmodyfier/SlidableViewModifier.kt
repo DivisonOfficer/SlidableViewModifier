@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintSet
 
 class SlidableViewModifier {
     val TAG = "Modifier"
@@ -33,6 +32,10 @@ class SlidableViewModifier {
     }
     fun setMinHeight(height : Int) : SlidableViewModifier{
         minHeight = height
+        return this
+    }
+    fun setHeadRatio(ratio: Double) : SlidableViewModifier{
+        topTouchableRatio = ratio.toFloat()
         return this
     }
     fun setOnSlideRatioChangeListener(listener : (Float) -> Unit) : SlidableViewModifier
@@ -84,6 +87,7 @@ class SlidableViewModifier {
                         )
                         val param = this.view.layoutParams
                         param.height = toHeight
+                        setRatio(toHeight)
                         this.view.layoutParams = param
                         return@setOnTouchListener false
                     }
@@ -104,7 +108,7 @@ class SlidableViewModifier {
     var slideRatio = 0f
     private fun setRatio(currentHeight : Int)
     {
-        slideRatio = (currentHeight.toFloat() / (maxHeight - minHeight))
+        slideRatio = ((currentHeight.toFloat() - minHeight) / (maxHeight - minHeight))
         onSlideChangeListener(slideRatio)
     }
     var onSlideChangeListener : (Float)->Unit = {_ ->}
