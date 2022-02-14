@@ -1,11 +1,14 @@
 package com.divisonofficer.slidableviewmodyfier
 
+import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.TimeAnimator
 import android.annotation.SuppressLint
+import android.transition.Slide
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.animation.doOnEnd
 
 class SlidableViewModifier {
     val TAG = "Modifier"
@@ -31,7 +34,7 @@ class SlidableViewModifier {
     fun setView(view : View) : SlidableViewModifier
     {
         this.view = view
-        this.minHeight = view.height
+        this.minHeight = view.measuredHeight
         return this
     }
 
@@ -41,6 +44,15 @@ class SlidableViewModifier {
     fun setMaxHeight(height : Int) : SlidableViewModifier
     {
         maxHeight = height
+        return this
+    }
+
+    /**
+     * 어느 정도 비율로 드래그 했을 때 자동으로 뷰가 열리고 닫치는지
+     */
+    fun setAutoSlideRatioLimit(ratio : Float) : SlidableViewModifier
+    {
+        gestureOpenHeightRatio = ratio
         return this
     }
 
@@ -207,6 +219,7 @@ class SlidableViewModifier {
             setRatio(newHeight)
         }
         duration = 300
+        doOnEnd {  onEndOfOpen(it)}
     }
     private val closeAnimator = TimeAnimator.ofFloat(0f,1f).apply{
         addUpdateListener {
@@ -218,5 +231,22 @@ class SlidableViewModifier {
             setRatio(newHeight)
         }
         duration = 300
+        doOnEnd {  onEndOfClose(it)}
     }
+
+    private var onEndOfOpen : (Animator)->Unit = {_ ->}
+
+    fun setOnEndOfOpenListener(listener : (Animator)->Unit) : SlidableViewModifier
+    {
+        onEndOfOpen = listener
+        return this
+    }
+    private var onEndOfClose : (Animator)->Unit = {_ ->}
+    fun setOnEndOfCloseListener(listener : (Animator)->Unit) : SlidableViewModifier
+    {
+        onEndOfClose = listener
+        return this
+    }
+
+
 }
